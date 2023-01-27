@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Image from "next/image";
+import Link from "next/link";
 import { Inter, Vollkorn_SC } from "@next/font/google";
 import styles from "@/styles/Home.module.css";
 
@@ -21,13 +21,7 @@ export default function Home() {
       <main className={styles.main}>
         <div className={styles.description}>
           <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By Daffa & Wisnu
-            </a>
+            <p>By Daffa & Wisnu</p>
           </div>
         </div>
 
@@ -36,47 +30,47 @@ export default function Home() {
         </div>
 
         <div className={styles.grid}>
-          <a
+          <Link
             href="/ciphers/vigenere_cipher"
             className={styles.card}
             rel="noopener noreferrer"
           >
             <h2 className={inter.className}>
-              Vigenere Cipher <span>-&gt;</span>
+              Vigenère Cipher <span>-&gt;</span>
             </h2>
             <p className={inter.className}>
               Method of encrypting alphabetic text by using a series of
               interwoven Caesar ciphers, based on the letters of a keyword
             </p>
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/ciphers/autokey_vigenere_cipher"
             className={styles.card}
             rel="noopener noreferrer"
           >
             <h2 className={inter.className}>
-              Auto-key Vigenere Cipher<span>-&gt;</span>
+              Auto-key Vigenère Cipher<span>-&gt;</span>
             </h2>
             <p className={inter.className}>
-              Vigenere Cipher where the key is based on the original plaintext
+              Vigenère Cipher where the key is based on the original plaintext
             </p>
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/ciphers/extended_vigenere_cipher"
             className={styles.card}
             rel="noopener noreferrer"
           >
             <h2 className={inter.className}>
-              Extended Vigenere Cipher <span>-&gt;</span>
+              Extended Vigenère Cipher <span>-&gt;</span>
             </h2>
             <p className={inter.className}>
-              Vigenere Cipher for 256 ASCII characters
+              Vigenère Cipher for 256 ASCII characters
             </p>
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/ciphers/affine_cipher"
             className={styles.card}
             rel="noopener noreferrer"
@@ -88,9 +82,9 @@ export default function Home() {
               A type of monoalphabetic substitution cipher, where each letter in
               an alphabet is mapped to its numeric equivalent
             </p>
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/ciphers/playfair_cipher"
             className={styles.card}
             rel="noopener noreferrer"
@@ -102,9 +96,9 @@ export default function Home() {
               A manual symmetric encryption technique and was the first literal
               digram substitution cipher
             </p>
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/ciphers/hill_cipher"
             className={styles.card}
             rel="noopener noreferrer"
@@ -115,9 +109,9 @@ export default function Home() {
             <p className={inter.className}>
               A polygraphic substitution cipher based on linear algebra
             </p>
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/ciphers/enigma_cipher"
             className={styles.card}
             rel="noopener noreferrer"
@@ -130,7 +124,7 @@ export default function Home() {
               century to protect commercial, diplomatic, and military
               communication
             </p>
-          </a>
+          </Link>
         </div>
       </main>
     </>
