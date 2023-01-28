@@ -2,6 +2,8 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { Inter, Vollkorn_SC } from "@next/font/google";
 import styles from "@/styles/Home.module.css";
+import React from "react";
+import { Input, Box, Text, Button, Select } from "@chakra-ui/react";
 
 const inter = Inter({ subsets: ["latin"] });
 const vollkorn_sc = Vollkorn_SC({
@@ -11,7 +13,65 @@ const vollkorn_sc = Vollkorn_SC({
 
 export default function AutokeyVigenereCipher() {
   const router = useRouter();
-
+  const autokeyVigenereCipher = React.useCallback(
+    (plaintext: string, cipherkey: string, encrypt: boolean) => {
+      let text = "";
+      let currText = plaintext.split(" ").join("");
+      cipherkey = cipherkey.toUpperCase();
+      if (cipherkey.length < currText.length && encrypt) {
+        cipherkey += currText;
+      }
+      for (let i = 0; i < currText.length; i++) {
+        if (encrypt) {
+          let coded = currText.charCodeAt(i) + cipherkey.charCodeAt(i) - 65;
+          if (coded > 90) coded -= 26;
+          text += String.fromCharCode(coded);
+          console.log("autokeyVigenere en", currText, text, cipherkey);
+        } else {
+          let coded = currText.charCodeAt(i) - cipherkey.charCodeAt(i) + 65;
+          if (coded < 65) coded += 26;
+          cipherkey += String.fromCharCode(coded);
+          text += String.fromCharCode(coded);
+          console.log("autokeyVigenere dec", currText, text, cipherkey);
+        }
+      }
+      return text;
+    },
+    []
+  );
+  const [inputText, setInputText] = React.useState("");
+  const [result, setResult] = React.useState("");
+  const [fileAsText, setFileAsText] = React.useState<string>("");
+  const [cipherkey, setCipherkey] = React.useState("");
+  const [inputMode, setInputMode] = React.useState("1");
+  const [loading, setLoading] = React.useState(false);
+  const showFile = React.useCallback((e: FileList | null) => {
+    if (e !== null) {
+      const filee = e[0];
+      const reader = new FileReader();
+      if (filee.type.startsWith("image")) {
+        reader.readAsDataURL(filee);
+      } else {
+        reader.readAsText(filee);
+      }
+      reader.onloadend = async function () {
+        if (reader.result !== null) {
+          if (filee.type.startsWith("image")) {
+            const dataURL = reader.result.toString().split(",")[1];
+            console.log("autokeyVigenere", dataURL);
+            await setFileAsText(dataURL);
+          } else {
+            await setFileAsText(reader.result.toString());
+          }
+        }
+      };
+    }
+  }, []);
+  React.useEffect(() => {
+    if (fileAsText !== "") {
+      setInputText(fileAsText);
+    }
+  }, [setInputText, fileAsText]);
   return (
     <>
       <Head>
@@ -30,6 +90,199 @@ export default function AutokeyVigenereCipher() {
             </a>
           </div>
         </div>
+        <Box
+          display="flex"
+          width="1000px"
+          height="750px"
+          bgColor="blue"
+          borderWidth="4px"
+          justifyContent="center"
+          flexDirection="column"
+          margin="20px"
+        >
+          <Box>
+            <Text w="100%" fontWeight={16} textAlign="center" margin="10px">
+              INPUT
+            </Text>
+          </Box>
+          <Box display="block" w="90%" alignSelf="center">
+            <Select
+              value={inputMode}
+              width="100%"
+              onChange={(e) => {
+                setInputMode(e.target.value);
+              }}
+            >
+              <option value="1">Text Input</option>
+              <option value="2">File Input</option>
+            </Select>
+          </Box>
+          {inputMode === "1" && (
+            <Input
+              placeholder="Insert Plaintext"
+              type="text"
+              value={inputText}
+              onChange={(e) => {
+                setInputText(e.target.value);
+              }}
+              variant="outline"
+              marginTop="10px"
+              w="90%"
+              h="100px"
+              maxH="100%"
+              overflow="auto"
+              aria-label="autokeyVigenere-input"
+              verticalAlign="center"
+              alignSelf="center"
+            ></Input>
+          )}
+          {inputMode === "2" && (
+            <Box display="flex" w="100%" flexDirection="column">
+              <Input
+                placeholder=""
+                type="file"
+                accept=".txt, image/*"
+                onChange={(e) => {
+                  showFile(e.target.files);
+                }}
+                variant="outline"
+                margin="10px"
+                w="90%"
+                overflow="auto"
+                aria-label="autokeyVigenere-file-input"
+                verticalAlign="center"
+                alignSelf="center"
+                textAlign="center"
+              ></Input>
+              <Box
+                display="flex"
+                w="90%"
+                h="100px"
+                bgColor="gray"
+                alignSelf="center"
+                alignContent="center"
+                margin="10px"
+                textAlign="center"
+                overflow="auto"
+              >
+                <Text
+                  w="100%"
+                  maxH="100%"
+                  alignSelf="center"
+                  fontSize={16}
+                  fontWeight="medium"
+                  textAlign="center"
+                  overflow="auto"
+                  padding="10px"
+                >
+                  {fileAsText}
+                </Text>
+              </Box>
+            </Box>
+          )}
+
+          <Input
+            placeholder="Insert Key"
+            type="text"
+            value={cipherkey}
+            onChange={(e) => {
+              setCipherkey(e.target.value);
+            }}
+            variant="outline"
+            marginTop="10px"
+            w="90%"
+            h="50px"
+            maxH="100%"
+            overflow="auto"
+            aria-label="autokeyVigenere-key-input"
+            alignSelf="center"
+          ></Input>
+          <Button
+            isLoading={loading}
+            size="md"
+            w="90%"
+            margin="10px"
+            alignSelf="center"
+            onClick={async () => {
+              setLoading(true);
+              if (inputMode === "1") {
+                const res = await autokeyVigenereCipher(
+                  inputText,
+                  cipherkey,
+                  true
+                );
+                setResult(res);
+              } else {
+                const res = await autokeyVigenereCipher(
+                  fileAsText,
+                  cipherkey,
+                  true
+                );
+                setResult(res);
+              }
+              setLoading(false);
+            }}
+          >
+            Encrypt
+          </Button>
+          <Button
+            isLoading={loading}
+            size="md"
+            w="90%"
+            margin="10px"
+            alignSelf="center"
+            onClick={async () => {
+              setLoading(true);
+              if (inputMode === "1") {
+                const res = await autokeyVigenereCipher(
+                  inputText,
+                  cipherkey,
+                  false
+                );
+                setResult(res);
+              } else {
+                const res = await autokeyVigenereCipher(
+                  fileAsText,
+                  cipherkey,
+                  false
+                );
+                setResult(res);
+              }
+              setLoading(false);
+            }}
+          >
+            Decrypt
+          </Button>
+          <Box margin="10px">
+            <Text w="100%" fontWeight="bold" textAlign="center">
+              RESULT
+            </Text>
+          </Box>
+          <Box
+            display="flex"
+            w="90%"
+            h="100px"
+            bgColor="gray"
+            alignSelf="center"
+            alignContent="center"
+            margin="10px"
+            textAlign="center"
+            overflow="auto"
+          >
+            <Text
+              w="100%"
+              maxH="100%"
+              alignSelf="center"
+              fontSize={16}
+              fontWeight="medium"
+              textAlign="center"
+              overflow="auto"
+              padding="10px"
+            >
+              {result}
+            </Text>
+          </Box>
+        </Box>
         <div className={styles.center}>
           <h1 className={vollkorn_sc.className}>Autokey Vigenère Cipher</h1>
         </div>
