@@ -3,11 +3,11 @@ import { useRouter } from "next/router";
 import { Inter, Vollkorn_SC } from "@next/font/google";
 import styles from "@/styles/Home.module.css";
 import React from "react";
-import { Input, Box, Text, Button } from "@chakra-ui/react";
+import { Input, Box, Text, Button, Select } from "@chakra-ui/react";
 import { read } from "fs";
 
 const inter = Inter({ subsets: ["latin"] });
-const alpha = new RegExp("[^a-zA-Z]");
+//const alpha = new RegExp("[^a-zA-Z]");
 const vollkorn_sc = Vollkorn_SC({
   subsets: ["latin"],
   weight: "400",
@@ -18,9 +18,12 @@ export default function VigenereCipher() {
   const keyExpand = React.useCallback(
     (cipherkey: string, messagelength: number) => {
       let newKey = cipherkey;
-      while (newKey.length < messagelength) {
-        newKey += cipherkey;
+      const expandTimes = Math.floor(messagelength / cipherkey.length);
+      newKey = cipherkey.repeat(expandTimes);
+      for (let i = expandTimes * cipherkey.length; i < messagelength; i++) {
+        newKey += cipherkey[i % cipherkey.length];
       }
+      console.log("vigenere", expandTimes);
       return newKey;
     },
     []
@@ -28,17 +31,19 @@ export default function VigenereCipher() {
   const vigenereCipher = React.useCallback(
     (plaintext: string, cipherkey: string, encrypt: boolean) => {
       let text = "";
-      let currText = plaintext.replace(alpha, "").toUpperCase();
+      let currText = plaintext.split(" ").join("").toUpperCase();
       cipherkey = keyExpand(cipherkey, currText.length).toUpperCase();
       for (let i = 0; i < currText.length; i++) {
         if (encrypt) {
           let coded = currText.charCodeAt(i) + cipherkey.charCodeAt(i) - 65;
           if (coded > 90) coded -= 26;
-          text = text + String.fromCharCode(coded);
+          text += String.fromCharCode(coded);
+          console.log("vigenere en", currText, text, cipherkey);
         } else {
           let coded = currText.charCodeAt(i) - cipherkey.charCodeAt(i) + 65;
           if (coded < 65) coded += 26;
-          text = text + String.fromCharCode(coded);
+          text += String.fromCharCode(coded);
+          console.log("vigenere dec", currText, text, cipherkey);
         }
       }
       return text;
@@ -46,31 +51,37 @@ export default function VigenereCipher() {
     [keyExpand]
   );
   const [inputText, setInputText] = React.useState("");
-  const [inputFile, setInputFile] = React.useState<FileList | null>(null);
   const [result, setResult] = React.useState("");
   const [fileAsText, setFileAsText] = React.useState<string>("");
+  const [cipherkey, setCipherkey] = React.useState("");
+  const [inputMode, setInputMode] = React.useState("1");
   const showFile = React.useCallback((e: FileList | null) => {
     if (e !== null) {
       const filee = e[0];
       const reader = new FileReader();
-      reader.readAsText(filee);
+      if (filee.type.startsWith("image")) {
+        reader.readAsDataURL(filee);
+      } else {
+        reader.readAsText(filee);
+      }
       reader.onloadend = function () {
         if (reader.result !== null) {
-          setFileAsText(reader.result.toString());
-          //setInputText(reader.result.toString());
+          if (filee.type.startsWith("image")) {
+            const dataURL = reader.result.toString().split(",")[1];
+            console.log("vigenere", dataURL);
+            setFileAsText(dataURL);
+          } else {
+            setFileAsText(reader.result.toString());
+          }
         }
       };
     }
   }, []);
-  const res = result;
-  console.log(
-    "vigenere",
-    "res",
-    vigenereCipher(fileAsText, "AYUSH", true),
-    res,
-    "file",
-    fileAsText
-  );
+  React.useEffect(() => {
+    if (fileAsText !== "") {
+      setInputText(fileAsText);
+    }
+  }, [setInputText, fileAsText]);
   return (
     <>
       <Head>
@@ -92,66 +103,168 @@ export default function VigenereCipher() {
 
         <Box
           display="flex"
-          width="800px"
-          height="600px"
+          width="1000px"
+          height="750px"
           bgColor="blue"
           borderWidth="4px"
           justifyContent="center"
           flexDirection="column"
+          margin="20px"
         >
           <Box>
-            <Text w="100%" fontWeight={16} textAlign="center">
+            <Text w="100%" fontWeight={16} textAlign="center" margin="10px">
               INPUT
             </Text>
           </Box>
+          <Box display="block" w="90%" alignSelf="center">
+            <Select
+              value={inputMode}
+              width="100%"
+              onChange={(e) => {
+                setInputMode(e.target.value);
+              }}
+            >
+              <option value="1">Text Input</option>
+              <option value="2">File Input</option>
+            </Select>
+          </Box>
+          {inputMode === "1" && (
+            <Input
+              placeholder="Insert Plaintext"
+              type="text"
+              value={inputText}
+              onChange={(e) => {
+                setInputText(e.target.value);
+              }}
+              variant="outline"
+              marginTop="10px"
+              w="90%"
+              h="100px"
+              maxH="100%"
+              overflow="auto"
+              aria-label="vigenere-input"
+              verticalAlign="center"
+              alignSelf="center"
+            ></Input>
+          )}
+          {inputMode === "2" && (
+            <Box display="flex" w="100%" flexDirection="column">
+              <Input
+                placeholder=""
+                type="file"
+                accept=".txt, image/*"
+                onChange={(e) => {
+                  showFile(e.target.files);
+                }}
+                variant="outline"
+                margin="10px"
+                w="90%"
+                overflow="auto"
+                aria-label="vigenere-file-input"
+                verticalAlign="center"
+                alignSelf="center"
+                textAlign="center"
+              ></Input>
+              <Box
+                display="flex"
+                w="90%"
+                h="100px"
+                bgColor="gray"
+                alignSelf="center"
+                margin="10px"
+                textAlign="center"
+                overflow="auto"
+              >
+                <Text
+                  w="100%"
+                  alignSelf="center"
+                  fontSize={16}
+                  fontWeight="medium"
+                  textAlign="center"
+                  overflow="auto"
+                >
+                  {fileAsText}
+                </Text>
+              </Box>
+            </Box>
+          )}
+
           <Input
-            placeholder=""
+            placeholder="Insert Key"
             type="text"
-            value={inputText}
+            value={cipherkey}
             onChange={(e) => {
-              setInputText(e.target.value);
+              setCipherkey(e.target.value);
             }}
             variant="outline"
             marginTop="10px"
             w="90%"
-            h="100px"
+            h="50px"
             maxH="100%"
-            overflow="scroll"
-            aria-label="vigenere-input"
-            verticalAlign="center"
-            alignSelf="center"
-          ></Input>
-          <Input
-            placeholder=""
-            type="file"
-            onChange={(e) => {
-              setInputFile(e.target.files);
-              showFile(e.target.files);
-            }}
-            variant="outline"
-            marginTop="10px"
-            w="90%"
-            h="100px"
-            maxH="100%"
-            overflow="scroll"
-            aria-label="vigenere-file-input"
-            verticalAlign="center"
+            overflow="auto"
+            aria-label="vigenere-key-input"
             alignSelf="center"
           ></Input>
           <Button
+            size="md"
+            w="90%"
+            margin="10px"
+            alignSelf="center"
             onClick={() => {
-              if (inputText !== "") {
-                const res = vigenereCipher(inputText, "AYUSH", true);
+              if (inputMode === "1") {
+                const res = vigenereCipher(inputText, cipherkey, true);
                 setResult(res);
               } else {
-                const res = vigenereCipher(fileAsText, "AYUSH", true);
+                const res = vigenereCipher(fileAsText, cipherkey, true);
                 setResult(res);
               }
             }}
           >
             Encrypt
           </Button>
-          <Text>{result}</Text>
+          <Button
+            size="md"
+            w="90%"
+            margin="10px"
+            alignSelf="center"
+            onClick={() => {
+              if (inputMode === "1") {
+                const res = vigenereCipher(inputText, cipherkey, false);
+                setResult(res);
+              } else {
+                const res = vigenereCipher(fileAsText, cipherkey, false);
+                setResult(res);
+              }
+            }}
+          >
+            Decrypt
+          </Button>
+          <Box margin="10px">
+            <Text w="100%" fontWeight="bold" textAlign="center">
+              RESULT
+            </Text>
+          </Box>
+          <Box
+            display="flex"
+            w="90%"
+            h="100px"
+            bgColor="gray"
+            alignSelf="center"
+            alignContent="center"
+            margin="10px"
+            textAlign="center"
+          >
+            <Text
+              w="100%"
+              alignSelf="center"
+              fontSize={16}
+              fontWeight="medium"
+              textAlign="center"
+              overflow="auto"
+            >
+              {result}
+            </Text>
+          </Box>
         </Box>
         <div className={styles.center}>
           <h1 className={vollkorn_sc.className}>Vigenère Cipher</h1>
