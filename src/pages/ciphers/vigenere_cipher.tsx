@@ -4,7 +4,6 @@ import { Inter, Vollkorn_SC } from "@next/font/google";
 import styles from "@/styles/Home.module.css";
 import React from "react";
 import { Input, Box, Text, Button, Select } from "@chakra-ui/react";
-import { read } from "fs";
 
 const inter = Inter({ subsets: ["latin"] });
 //const alpha = new RegExp("[^a-zA-Z]");
@@ -19,10 +18,10 @@ export default function VigenereCipher() {
     (cipherkey: string, messagelength: number) => {
       let newKey = cipherkey;
       const expandTimes = Math.floor(messagelength / cipherkey.length);
-      newKey = cipherkey.repeat(expandTimes);
-      for (let i = expandTimes * cipherkey.length; i < messagelength; i++) {
-        newKey += cipherkey[i % cipherkey.length];
-      }
+      newKey = cipherkey.repeat(expandTimes + 1);
+      // for (let i = expandTimes * cipherkey.length; i < messagelength; i++) {
+      //   newKey += cipherkey[i % cipherkey.length];
+      // }
       console.log("vigenere", expandTimes);
       return newKey;
     },
@@ -102,7 +101,6 @@ export default function VigenereCipher() {
             </a>
           </div>
         </div>
-
         <Box
           display="flex"
           width="1000px"
