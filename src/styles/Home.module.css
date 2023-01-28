@@ -280,3 +280,7 @@
 .button {
   cursor: pointer;
 }
+
+.select_option {
+  color: black;
+}
