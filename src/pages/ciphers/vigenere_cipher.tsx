@@ -55,6 +55,7 @@ export default function VigenereCipher() {
   const [fileAsText, setFileAsText] = React.useState<string>("");
   const [cipherkey, setCipherkey] = React.useState("");
   const [inputMode, setInputMode] = React.useState("1");
+  const [loading, setLoading] = React.useState(false);
   const showFile = React.useCallback((e: FileList | null) => {
     if (e !== null) {
       const filee = e[0];
@@ -64,14 +65,14 @@ export default function VigenereCipher() {
       } else {
         reader.readAsText(filee);
       }
-      reader.onloadend = function () {
+      reader.onloadend = async function () {
         if (reader.result !== null) {
           if (filee.type.startsWith("image")) {
             const dataURL = reader.result.toString().split(",")[1];
             console.log("vigenere", dataURL);
-            setFileAsText(dataURL);
+            await setFileAsText(dataURL);
           } else {
-            setFileAsText(reader.result.toString());
+            await setFileAsText(reader.result.toString());
           }
         }
       };
@@ -82,6 +83,7 @@ export default function VigenereCipher() {
       setInputText(fileAsText);
     }
   }, [setInputText, fileAsText]);
+  console.log("vigenere", loading);
   return (
     <>
       <Head>
@@ -171,17 +173,20 @@ export default function VigenereCipher() {
                 h="100px"
                 bgColor="gray"
                 alignSelf="center"
+                alignContent="center"
                 margin="10px"
                 textAlign="center"
                 overflow="auto"
               >
                 <Text
                   w="100%"
+                  maxH="100%"
                   alignSelf="center"
                   fontSize={16}
                   fontWeight="medium"
                   textAlign="center"
                   overflow="auto"
+                  padding="10px"
                 >
                   {fileAsText}
                 </Text>
@@ -206,35 +211,41 @@ export default function VigenereCipher() {
             alignSelf="center"
           ></Input>
           <Button
+            isLoading={loading}
             size="md"
             w="90%"
             margin="10px"
             alignSelf="center"
-            onClick={() => {
+            onClick={async () => {
+              setLoading(true);
               if (inputMode === "1") {
-                const res = vigenereCipher(inputText, cipherkey, true);
+                const res = await vigenereCipher(inputText, cipherkey, true);
                 setResult(res);
               } else {
-                const res = vigenereCipher(fileAsText, cipherkey, true);
+                const res = await vigenereCipher(fileAsText, cipherkey, true);
                 setResult(res);
               }
+              setLoading(false);
             }}
           >
             Encrypt
           </Button>
           <Button
+            isLoading={loading}
             size="md"
             w="90%"
             margin="10px"
             alignSelf="center"
-            onClick={() => {
+            onClick={async () => {
+              setLoading(true);
               if (inputMode === "1") {
-                const res = vigenereCipher(inputText, cipherkey, false);
+                const res = await vigenereCipher(inputText, cipherkey, false);
                 setResult(res);
               } else {
-                const res = vigenereCipher(fileAsText, cipherkey, false);
+                const res = await vigenereCipher(fileAsText, cipherkey, false);
                 setResult(res);
               }
+              setLoading(false);
             }}
           >
             Decrypt
@@ -253,14 +264,17 @@ export default function VigenereCipher() {
             alignContent="center"
             margin="10px"
             textAlign="center"
+            overflow="auto"
           >
             <Text
               w="100%"
+              maxH="100%"
               alignSelf="center"
               fontSize={16}
               fontWeight="medium"
               textAlign="center"
               overflow="auto"
+              padding="10px"
             >
               {result}
             </Text>
