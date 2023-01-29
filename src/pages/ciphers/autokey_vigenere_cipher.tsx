@@ -38,7 +38,7 @@ export default function AutokeyVigenereCipher() {
   const autokeyVigenereCipher = React.useCallback(
     (plaintext: string, cipherkey: string, encrypt: boolean) => {
       let text = "";
-      let currText = plaintext.split(" ").join("");
+      let currText = plaintext.split(" ").join("").toUpperCase();
       cipherkey = cipherkey.toUpperCase();
       if (cipherkey.length < currText.length && encrypt) {
         cipherkey += currText;
