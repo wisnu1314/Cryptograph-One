@@ -31,7 +31,7 @@ export default function Home() {
 
         <div className={styles.grid}>
           <Link
-            href="/ciphers/vigenere_cipher"
+            href="/ciphers/VigenereCipher"
             className={styles.card}
             rel="noopener noreferrer"
           >
@@ -45,7 +45,7 @@ export default function Home() {
           </Link>
 
           <Link
-            href="/ciphers/autokey_vigenere_cipher"
+            href="/ciphers/AutokeyVigenereCipher"
             className={styles.card}
             rel="noopener noreferrer"
           >
@@ -58,7 +58,7 @@ export default function Home() {
           </Link>
 
           <Link
-            href="/ciphers/extended_vigenere_cipher"
+            href="/ciphers/ExtendedVigenereCipher"
             className={styles.card}
             rel="noopener noreferrer"
           >
@@ -71,7 +71,7 @@ export default function Home() {
           </Link>
 
           <Link
-            href="/ciphers/affine_cipher"
+            href="/ciphers/AffineCipher"
             className={styles.card}
             rel="noopener noreferrer"
           >
@@ -85,7 +85,7 @@ export default function Home() {
           </Link>
 
           <Link
-            href="/ciphers/playfair_cipher"
+            href="/ciphers/PlayfairCipher"
             className={styles.card}
             rel="noopener noreferrer"
           >
@@ -99,7 +99,7 @@ export default function Home() {
           </Link>
 
           <Link
-            href="/ciphers/hill_cipher"
+            href="/ciphers/HillCipher"
             className={styles.card}
             rel="noopener noreferrer"
           >
@@ -112,7 +112,7 @@ export default function Home() {
           </Link>
 
           <Link
-            href="/ciphers/enigma_cipher"
+            href="/ciphers/EnigmaCipher"
             className={styles.card}
             rel="noopener noreferrer"
           >
