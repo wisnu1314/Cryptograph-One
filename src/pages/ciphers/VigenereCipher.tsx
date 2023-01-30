@@ -14,6 +14,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { StyleFunctionProps } from "@chakra-ui/theme-tools";
+import { SaveOutput } from "@/components/SaveOutput";
 
 const inter = Inter({ subsets: ["latin"] });
 const vollkorn_sc = Vollkorn_SC({
@@ -133,7 +134,7 @@ export default function VigenereCipher() {
           <Box
             display="flex"
             width="75%"
-            height="600px"
+            height="650px"
             borderWidth="4px"
             justifyContent="center"
             flexDirection="column"
@@ -346,6 +347,8 @@ export default function VigenereCipher() {
                 {result}
               </Text>
             </Box>
+
+            <SaveOutput text={result} />
           </Box>
         </main>
       </ChakraProvider>

@@ -14,6 +14,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { StyleFunctionProps } from "@chakra-ui/theme-tools";
+import { SaveOutput } from "@/components/SaveOutput";
 
 const inter = Inter({ subsets: ["latin"] });
 const vollkorn_sc = Vollkorn_SC({
@@ -179,7 +180,7 @@ export default function AffineCipher() {
           <Box
             display="flex"
             width="75%"
-            height="650px"
+            height="700px"
             borderWidth="4px"
             justifyContent="center"
             flexDirection="column"
@@ -413,6 +414,8 @@ export default function AffineCipher() {
                 {result}
               </Text>
             </Box>
+
+            <SaveOutput text={result} />
           </Box>
         </main>
       </ChakraProvider>

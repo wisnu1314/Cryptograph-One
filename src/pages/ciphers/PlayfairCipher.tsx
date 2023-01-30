@@ -15,6 +15,7 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react";
 import { StyleFunctionProps } from "@chakra-ui/theme-tools";
+import { SaveOutput } from "@/components/SaveOutput";
 
 const inter = Inter({ subsets: ["latin"] });
 const vollkorn_sc = Vollkorn_SC({
@@ -200,7 +201,7 @@ export default function PlayfairCipher() {
           <Box
             display="flex"
             width="75%"
-            height="950px"
+            height="1000px"
             borderWidth="4px"
             justifyContent="center"
             flexDirection="column"
@@ -424,6 +425,8 @@ export default function PlayfairCipher() {
                 {result}
               </Text>
             </Box>
+
+            <SaveOutput text={result} />
           </Box>
         </main>
       </ChakraProvider>
