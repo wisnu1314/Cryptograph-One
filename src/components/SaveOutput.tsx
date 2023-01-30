@@ -23,7 +23,7 @@ export const SaveOutput: FunctionComponent = ({ text }) => {
   // Call the function if list changes
   useEffect(() => {
     makeTextFile(text);
-  }, [makeTextFile, text]);
+  }, [text]);
 
   return (
     <>
