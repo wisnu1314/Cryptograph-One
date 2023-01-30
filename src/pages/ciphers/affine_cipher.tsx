@@ -42,15 +42,15 @@ export default function AffineCipher() {
   const affineCipher = React.useCallback(
     (
       plaintext: string,
-      cipherkey1: string,
-      cipherkey2: string,
+      cipherkey1: number,
+      cipherkey2: number,
       encrypt: boolean
     ) => {
-      cipherkey1 = parseInt(cipherkey1);
-      cipherkey2 = parseInt(cipherkey2);
+      // cipherkey1 = parseInt(cipherkey1);
+      // cipherkey2 = parseInt(cipherkey2);
       if (cipherkey1 != 13 || (cipherkey1 & 1) != 0) {
         let text = "";
-        let currText = plaintext.split(" ").join("").toUpperCase();
+        let currText = plaintext.replaceAll(" ", "").toUpperCase();
         let z26Inverse = [
           1,
           null,
@@ -93,7 +93,7 @@ export default function AffineCipher() {
               cipherkey2
             );
           } else {
-            let mInverse = z26Inverse[cipherkey1 - 1];
+            let mInverse = z26Inverse[cipherkey1 - 1]!;
             let formula =
               mod(mInverse * (char.charCodeAt(0) - 65 - cipherkey2), 26) + 65;
             text += String.fromCharCode(formula);
@@ -117,8 +117,8 @@ export default function AffineCipher() {
   const [inputText, setInputText] = React.useState("");
   const [result, setResult] = React.useState("");
   const [fileAsText, setFileAsText] = React.useState<string>("");
-  const [cipherkey1, setCipherkey1] = React.useState("");
-  const [cipherkey2, setCipherkey2] = React.useState("");
+  const [cipherkey1, setCipherkey1] = React.useState(NaN);
+  const [cipherkey2, setCipherkey2] = React.useState(NaN);
   const [inputMode, setInputMode] = React.useState("1");
   const [loading, setLoading] = React.useState(false);
 
@@ -277,7 +277,7 @@ export default function AffineCipher() {
               type="number"
               value={cipherkey1}
               onChange={(e) => {
-                setCipherkey1(e.target.value);
+                setCipherkey1(Number(e.target.value));
               }}
               variant="outline"
               marginTop="10px"
@@ -294,7 +294,7 @@ export default function AffineCipher() {
               type="number"
               value={cipherkey2}
               onChange={(e) => {
-                setCipherkey2(e.target.value);
+                setCipherkey2(Number(e.target.value));
               }}
               variant="outline"
               marginTop="10px"
