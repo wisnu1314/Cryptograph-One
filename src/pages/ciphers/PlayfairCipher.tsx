@@ -53,7 +53,7 @@ export default function PlayfairCipher() {
         .toUpperCase();
       let i = 0;
       let charPair = [];
-      let charIndexes = Array.from({ length: 26 }, (v, i) => null);
+      let charIndexes = Array.from({ length: 26 }, () => null);
       let text = "";
 
       cipherkeys = cipherkeys.reduce(
@@ -201,14 +201,20 @@ export default function PlayfairCipher() {
           <Box
             display="flex"
             width="75%"
-            height="1000px"
+            height="950px"
             borderWidth="4px"
             justifyContent="center"
             flexDirection="column"
             margin="20px"
           >
             <Box>
-              <Text w="100%" fontWeight={16} textAlign="center" margin="10px">
+              <Text
+                w="100%"
+                fontWeight="bold"
+                textAlign="center"
+                margin="10px"
+                fontSize={24}
+              >
                 INPUT
               </Text>
             </Box>
@@ -303,8 +309,8 @@ export default function PlayfairCipher() {
             <SimpleGrid
               columns={5}
               margin="20px"
-              spacingY="20px"
-              width="50%"
+              width="25%"
+              minChildWidth="45px"
               alignSelf="center"
             >
               {cipherkeys.map((cipherkey, i) => (
@@ -324,7 +330,6 @@ export default function PlayfairCipher() {
                     e.target.value = ("" + e.target.value).toUpperCase();
                   }}
                   variant="outline"
-                  w="50%"
                   h="50px"
                   maxH="100%"
                   overflow="auto"
@@ -396,7 +401,13 @@ export default function PlayfairCipher() {
             </Stack>
 
             <Box>
-              <Text w="100%" fontWeight={16} textAlign="center" margin="10px">
+              <Text
+                w="100%"
+                fontWeight="bold"
+                textAlign="center"
+                margin="10px"
+                fontSize={24}
+              >
                 RESULT
               </Text>
             </Box>
