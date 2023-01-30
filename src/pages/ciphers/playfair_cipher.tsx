@@ -36,17 +36,101 @@ const theme = extendTheme({
 export default function PlayfairCipher() {
   const router = useRouter();
 
-  function mod(n: number, m: number) {
+  const initialCipherkeys = Array.from({ length: 25 }, (v, i) => "");
+
+  const mod = (n: number, m: number) => {
     return ((n % m) + m) % m;
-  }
+  };
 
   const playfairCipher = React.useCallback(
-    (plaintext: string, cipherkey: number[], encrypt: boolean) => {
-      let text = "";
+    (plaintext: string, cipherkeys: string[], encrypt: boolean) => {
       let currText = plaintext
-        .replaceAll(" ", "")
+        .split(" ")
+        .join("")
         .replace("J", "I")
+        .replace(/[^a-zA-Z]/g, "")
         .toUpperCase();
+      let i = 0;
+      let charPair = [];
+      let charIndexes = Array.from({ length: 26 }, (v, i) => null);
+      let text = "";
+
+      cipherkeys = cipherkeys.reduce(
+        (rows, key, index) =>
+          (index % 5 == 0
+            ? rows.push([key])
+            : rows[rows.length - 1].push(key)) && rows,
+        []
+      );
+
+      while (i < currText.length) {
+        let newEntry = null;
+        if (i === currText.length - 1) {
+          newEntry = [currText[i], "X"];
+        } else if (currText[i] === currText[i + 1]) {
+          newEntry = [currText[i], "X"];
+          i--;
+        } else {
+          newEntry = [currText[i], currText[i + 1]];
+        }
+        charPair.push(newEntry);
+        i += 2;
+      }
+
+      for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+          charIndexes[cipherkeys[i][j].charCodeAt(0) - 65] = {
+            row: i,
+            column: j,
+          };
+        }
+      }
+
+      if (encrypt) {
+        for (const pair of charPair) {
+          let firstCharIdx = charIndexes[pair[0].charCodeAt(0) - 65]!;
+          let secondCharIdx = charIndexes[pair[1].charCodeAt(0) - 65]!;
+
+          if (firstCharIdx["row"] === secondCharIdx["row"]) {
+            const rowKey = cipherkeys[firstCharIdx["row"]];
+            text += rowKey[mod(firstCharIdx["column"] + 1, 5)];
+            text += rowKey[mod(secondCharIdx["column"] + 1, 5)];
+          } else if (firstCharIdx["column"] === secondCharIdx["column"]) {
+            const columnKey = Array.from(
+              { length: 5 },
+              (v, i) => cipherkeys[i][firstCharIdx["column"]]
+            );
+            text += columnKey[mod(firstCharIdx["row"] + 1, 5)];
+            text += columnKey[mod(secondCharIdx["row"] + 1, 5)];
+          } else {
+            text += cipherkeys[firstCharIdx["row"]][secondCharIdx["column"]];
+            text += cipherkeys[secondCharIdx["row"]][firstCharIdx["column"]];
+          }
+        }
+      } else {
+        for (const pair of charPair) {
+          let firstCharIdx = charIndexes[pair[0].charCodeAt(0) - 65]!;
+          let secondCharIdx = charIndexes[pair[1].charCodeAt(0) - 65]!;
+
+          if (firstCharIdx["row"] === secondCharIdx["row"]) {
+            const rowKey = cipherkeys[firstCharIdx["row"]];
+            text += rowKey[mod(firstCharIdx["column"] - 1, 5)];
+            text += rowKey[mod(secondCharIdx["column"] - 1, 5)];
+          } else if (firstCharIdx["column"] === secondCharIdx["column"]) {
+            const columnKey = Array.from(
+              { length: 5 },
+              (v, i) => cipherkeys[i][firstCharIdx["column"]]
+            );
+            text += columnKey[mod(firstCharIdx["row"] - 1, 5)];
+            text += columnKey[mod(secondCharIdx["row"] - 1, 5)];
+          } else {
+            text += cipherkeys[firstCharIdx["row"]][secondCharIdx["column"]];
+            text += cipherkeys[secondCharIdx["row"]][firstCharIdx["column"]];
+          }
+        }
+      }
+
+      return text;
     },
     []
   );
@@ -54,7 +138,8 @@ export default function PlayfairCipher() {
   const [inputText, setInputText] = React.useState("");
   const [result, setResult] = React.useState("");
   const [fileAsText, setFileAsText] = React.useState<string>("");
-  const [cipherkey, setCipherkey] = React.useState<number[]>([]);
+  const [cipherkeys, setCipherkey] =
+    React.useState<string[]>(initialCipherkeys);
   const [inputMode, setInputMode] = React.useState("1");
   const [loading, setLoading] = React.useState(false);
 
@@ -208,337 +293,44 @@ export default function PlayfairCipher() {
               </Box>
             )}
 
+            <Box>
+              <Text w="100%" fontWeight={12} textAlign="center" margin="10px">
+                Insert Cipher Key
+              </Text>
+            </Box>
+
             <SimpleGrid
               columns={5}
-              marginTop="10px"
+              margin="20px"
               spacingY="20px"
               width="50%"
               alignSelf="center"
             >
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
-
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setCipherkey([...cipherkey, Number(e.target.value)]);
-                }}
-                variant="outline"
-                w="50%"
-                h="50px"
-                maxH="100%"
-                overflow="auto"
-                aria-label="playfair-a-coef-input"
-              ></Input>
+              {cipherkeys.map((cipherkey, i) => (
+                <Input
+                  key={i}
+                  type="text"
+                  value={cipherkeys[i]}
+                  onChange={(e) => {
+                    setCipherkey([
+                      ...cipherkeys.slice(0, i),
+                      e.target.value,
+                      ...cipherkeys.slice(i + 1),
+                    ]);
+                    console.log(cipherkeys);
+                  }}
+                  onInput={(e) => {
+                    e.target.value = ("" + e.target.value).toUpperCase();
+                  }}
+                  variant="outline"
+                  w="50%"
+                  h="50px"
+                  maxH="100%"
+                  overflow="auto"
+                  aria-label="playfair-coef-input"
+                  maxLength={1}
+                ></Input>
+              ))}
             </SimpleGrid>
 
             <Stack direction="row" spacing={2} alignSelf="center">
@@ -553,14 +345,14 @@ export default function PlayfairCipher() {
                   if (inputMode === "1") {
                     const res = await playfairCipher(
                       inputText,
-                      cipherkey,
+                      cipherkeys,
                       true
                     );
                     setResult(res);
                   } else {
                     const res = await playfairCipher(
                       fileAsText,
-                      cipherkey,
+                      cipherkeys,
                       true
                     );
                     setResult(res);
@@ -583,14 +375,14 @@ export default function PlayfairCipher() {
                   if (inputMode === "1") {
                     const res = await playfairCipher(
                       inputText,
-                      cipherkey,
+                      cipherkeys,
                       false
                     );
                     setResult(res);
                   } else {
                     const res = await playfairCipher(
                       fileAsText,
-                      cipherkey,
+                      cipherkeys,
                       false
                     );
                     setResult(res);
