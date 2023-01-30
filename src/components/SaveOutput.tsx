@@ -9,18 +9,21 @@ import { Button } from "@chakra-ui/react";
 export const SaveOutput: FunctionComponent = ({ text }) => {
   const [downloadLink, setDownloadLink] = useState("");
 
-  const makeTextFile = useCallback((text: string) => {
-    const data = new Blob([text], { type: "text/plain" });
+  const makeTextFile = useCallback(
+    (text: string) => {
+      const data = new Blob([text], { type: "text/plain" });
 
-    if (downloadLink !== "") window.URL.revokeObjectURL(downloadLink);
+      if (downloadLink !== "") window.URL.revokeObjectURL(downloadLink);
 
-    setDownloadLink(window.URL.createObjectURL(data));
-  }, []);
+      setDownloadLink(window.URL.createObjectURL(data));
+    },
+    [downloadLink, setDownloadLink]
+  );
 
   // Call the function if list changes
   useEffect(() => {
     makeTextFile(text);
-  }, [text]);
+  }, [makeTextFile, text]);
 
   return (
     <>
