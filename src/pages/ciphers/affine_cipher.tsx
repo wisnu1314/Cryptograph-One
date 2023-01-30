@@ -35,9 +35,9 @@ const theme = extendTheme({
 export default function AffineCipher() {
   const router = useRouter();
 
-  function mod(n: number, m: number) {
+  const mod = (n: number, m: number) => {
     return ((n % m) + m) % m;
-  }
+  };
 
   const affineCipher = React.useCallback(
     (
@@ -321,7 +321,7 @@ export default function AffineCipher() {
                       cipherkey1,
                       cipherkey2,
                       true
-                    );
+                    )!;
                     setResult(res);
                   } else {
                     const res = await affineCipher(
@@ -329,7 +329,7 @@ export default function AffineCipher() {
                       cipherkey1,
                       cipherkey2,
                       true
-                    );
+                    )!;
                     setResult(res);
                   }
                   setLoading(false);
@@ -353,7 +353,7 @@ export default function AffineCipher() {
                       cipherkey1,
                       cipherkey2,
                       false
-                    );
+                    )!;
                     setResult(res);
                   } else {
                     const res = await affineCipher(
@@ -361,7 +361,7 @@ export default function AffineCipher() {
                       cipherkey1,
                       cipherkey2,
                       false
-                    );
+                    )!;
                     setResult(res);
                   }
                   setLoading(false);
