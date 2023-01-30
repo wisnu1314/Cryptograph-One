@@ -231,7 +231,7 @@ export default function PlayfairCipher() {
 
             {inputMode === "1" && (
               <Input
-                placeholder="Insert Plaintext"
+                placeholder="Insert Plaintext or Ciphertext"
                 type="text"
                 value={inputText}
                 onChange={(e) => {

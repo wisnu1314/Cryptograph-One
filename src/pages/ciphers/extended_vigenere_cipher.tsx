@@ -142,7 +142,13 @@ export default function ExtendedVigenereCipher() {
             margin="20px"
           >
             <Box>
-              <Text w="100%" fontWeight={16} textAlign="center" margin="10px">
+              <Text
+                w="100%"
+                fontWeight="bold"
+                textAlign="center"
+                margin="10px"
+                fontSize={24}
+              >
                 INPUT
               </Text>
             </Box>
@@ -166,7 +172,7 @@ export default function ExtendedVigenereCipher() {
 
             {inputMode === "1" && (
               <Input
-                placeholder="Insert Plaintext"
+                placeholder="Insert Plaintext or Ciphertext"
                 type="text"
                 value={inputText}
                 onChange={(e) => {
@@ -309,7 +315,13 @@ export default function ExtendedVigenereCipher() {
             </Stack>
 
             <Box>
-              <Text w="100%" fontWeight={16} textAlign="center" margin="10px">
+              <Text
+                w="100%"
+                fontWeight="bold"
+                textAlign="center"
+                margin="10px"
+                fontSize={24}
+              >
                 RESULT
               </Text>
             </Box>
