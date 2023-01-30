@@ -36,7 +36,7 @@ const theme = extendTheme({
 export default function PlayfairCipher() {
   const router = useRouter();
 
-  const initialCipherkeys = Array.from({ length: 25 }, (v, i) => "");
+  const initialCipherkeys = Array.from({ length: 25 }, () => "");
 
   const mod = (n: number, m: number) => {
     return ((n % m) + m) % m;
@@ -200,7 +200,7 @@ export default function PlayfairCipher() {
           <Box
             display="flex"
             width="75%"
-            height="850px"
+            height="950px"
             borderWidth="4px"
             justifyContent="center"
             flexDirection="column"
