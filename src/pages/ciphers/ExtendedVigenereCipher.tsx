@@ -92,7 +92,7 @@ export default function ExtendedVigenereCipher() {
       reader.onloadend = async function () {
         if (reader.result !== null) {
           if (filee.type.startsWith("image")) {
-            const dataURL = reader.result.toString().split(",")[1];
+            const dataURL = reader.result.toString();
             console.log("extendedVigenere", dataURL);
             await setFileAsText(dataURL);
           } else {

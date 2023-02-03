@@ -81,16 +81,16 @@ export default function VigenereCipher() {
     if (e !== null) {
       const filee = e[0];
       const reader = new FileReader();
-      if (filee.type.startsWith("image")) {
+      if (!filee.type.startsWith("text")) {
         reader.readAsDataURL(filee);
       } else {
         reader.readAsText(filee);
       }
       reader.onloadend = async function () {
         if (reader.result !== null) {
-          if (filee.type.startsWith("image")) {
-            const dataURL = reader.result.toString().split(",")[1];
-            console.log("vigenere", dataURL);
+          if (!filee.type.startsWith("text")) {
+            const dataURL = reader.result.toString();
+            console.log("Vigenere", dataURL);
             await setFileAsText(dataURL);
           } else {
             await setFileAsText(reader.result.toString());
