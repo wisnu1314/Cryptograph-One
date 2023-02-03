@@ -127,15 +127,15 @@ export default function AffineCipher() {
     if (e !== null) {
       const filee = e[0];
       const reader = new FileReader();
-      if (filee.type.startsWith("image")) {
+      if (!filee.type.startsWith("text")) {
         reader.readAsDataURL(filee);
       } else {
         reader.readAsText(filee);
       }
       reader.onloadend = async function () {
         if (reader.result !== null) {
-          if (filee.type.startsWith("image")) {
-            const dataURL = reader.result.toString().split(",")[1];
+          if (!filee.type.startsWith("text")) {
+            const dataURL = reader.result.toString();
             console.log("affine", dataURL);
             await setFileAsText(dataURL);
           } else {

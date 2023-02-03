@@ -110,21 +110,6 @@ export default function Home() {
               A polygraphic substitution cipher based on linear algebra
             </p>
           </Link>
-
-          <Link
-            href="/ciphers/EnigmaCipher"
-            className={styles.card}
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Enigma Cipher <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              A cipher device developed and used in the early- to mid-20th
-              century to protect commercial, diplomatic, and military
-              communication
-            </p>
-          </Link>
         </div>
       </main>
     </>
